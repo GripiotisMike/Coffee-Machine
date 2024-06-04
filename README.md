@@ -1,4 +1,4 @@
-# CoffeMachine
+# Coffee Machine
 
 - This Project is wrinten in PyCharm!
 

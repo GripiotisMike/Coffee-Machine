@@ -12,10 +12,11 @@ The machine gives change if you overpay and alerts if there is insufficient mone
 The machine keeps track of money earned from selling coffee.
 
 ## Coffee Types & Prices
+
 Espresso:
 Ingredients: 50 ml of water, 18g of coffee
-
 Price: $1.50
+
 Latte:
 Ingredients: 200 ml of water, 150 ml of milk, 24g of coffee
 Price: $2.50

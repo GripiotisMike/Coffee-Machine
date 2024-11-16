@@ -33,63 +33,68 @@ resources = {
 
 
 def report_resources():
-    for i in resources:
-        print(f"{i} : {resources[i]}")
+    """Display current resources in the coffee machine."""
+    for item in resources:
+        print(f"{item.capitalize()}: {resources[item]}")
 
 
-def resource_check(coffe_type):
-    a = True
-    recipie = MENU[coffe_type]["ingredients"]
-    cof_need = recipie["coffee"]
-    wat_need = recipie["water"]
-    if coffe_type != "espresso":
-        milk_need = recipie["milk"]
-        if milk_need > resources["milk"]:
-            print("Sorry, there is not enough milk.")
-            a = False
-        else:
-            resources["milk"] = resources["milk"] - milk_need
-    if cof_need > resources["coffee"]:
-        print("Sorry, there is not enough coffee.")
-        a = False
-    else:
-        resources["coffee"] = resources["coffee"] - cof_need
-    if wat_need > resources["water"]:
-        print("Sorry, there is not enough water.")
-        a = False
-    else:
-        resources["water"] = resources["water"] - wat_need
-    return a
+def resource_check(coffee_type):
+    """Check if there are enough resources for the selected coffee type."""
+    recipe = MENU[coffee_type]["ingredients"]
+    # Check ingredients
+    for ingredient in recipe:
+        if ingredient != "cost":  # Skip the cost
+            if resources[ingredient] < recipe[ingredient]:
+                print(f"Sorry, there is not enough {ingredient}.")
+                return False
+            resources[ingredient] -= recipe[ingredient]
+    return True
 
 
-def money_check(coffe_type):
-    a = True
-    print("Please insert coin.")
-    mon_need = MENU[coffe_type]["cost"]
-    q = float(input("How many quarters? :"))
-    d = float(input("How many dimes? :"))
-    n = float(input("How many nickels? :"))
-    p = float(input("How many pennies? :"))
-    dora = (0.25 * q) + (0.1 * d) + (0.5 * n) + (0.01 * p)
-    if dora >= mon_need:
-        print(f"Here is ${dora-mon_need} in change.")
-        resources["money"] += mon_need
+def money_check(coffee_type):
+    """Check if the user has inserted enough money for the selected coffee."""
+    cost = MENU[coffee_type]["cost"]
+    print(f"Please insert ${cost:.2f}.")
+    
+    # Input handling for coin values
+    try:
+        quarters = float(input("How many quarters? :"))
+        dimes = float(input("How many dimes? :"))
+        nickels = float(input("How many nickels? :"))
+        pennies = float(input("How many pennies? :"))
+    except ValueError:
+        print("Invalid input. Please enter numeric values for coins.")
+        return False
+    
+    total_money = (0.25 * quarters) + (0.10 * dimes) + (0.05 * nickels) + (0.01 * pennies)
+    
+    if total_money >= cost:
+        change = total_money - cost
+        if change > 0:
+            print(f"Here is ${change:.2f} in change.")
+        resources["money"] += cost
+        return True
     else:
         print("Sorry, that's not enough money. Money refunded.")
-        a = False
-    return a
+        return False
 
 
-while True:
-    selected = input("What would you like? (espresso/latte/cappuccino):")
-    if selected in MENU:
-        if resource_check(selected):
-            if money_check(selected):
-                print(f"Here is your {selected} ☕️. Enjoy!")
-    elif selected == "report":
-        report_resources()
-    elif selected == "off":
-        break
-    else:
-        print("Invalid coffee/command.Please read the menu!")
-        continue
+def coffee_machine():
+    """Main function to run the coffee machine."""
+    while True:
+        selected = input("What would you like? (espresso/latte/cappuccino): ").lower()
+        
+        if selected == "off":
+            print("Turning off the coffee machine. Goodbye!")
+            break
+        elif selected == "report":
+            report_resources()
+        elif selected in MENU:
+            if resource_check(selected):
+                if money_check(selected):
+                    print(f"Here is your {selected} ☕️. Enjoy!")
+        else:
+            print("Invalid selection. Please choose a valid coffee or type 'report' to check resources.")
+
+if __name__ == "__main__":
+    coffee_machine()
